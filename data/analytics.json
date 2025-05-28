@@ -1,7 +1,29 @@
 {
-  "total_tickets": 0,
-  "category_distribution": {},
-  "priority_distribution": {},
-  "status_distribution": {},
-  "resolution_times": []
+  "total_tickets": 6,
+  "category_distribution": {
+    "network": 1,
+    "billing": 1,
+    "voip": 1,
+    "service": 1,
+    "mobile": 1,
+    "technical": 1
+  },
+  "priority_distribution": {
+    "critical": 1,
+    "high": 2,
+    "medium": 2,
+    "low": 1
+  },
+  "status_distribution": {
+    "open": 3,
+    "in-progress": 2,
+    "closed": 1
+  },
+  "resolution_times": [
+    {
+      "ticket_id": "TKT-006",
+      "resolution_time_hours": 1.5
+    }
+  ],
+  "last_updated": "2025-05-28T10:00:00Z"
 }

@@ -1,1 +1,80 @@
-[]
+[
+  {
+    "id": "TKT-001",
+    "title": "Internet Connection Outage",
+    "description": "Complete loss of internet connectivity in residential area. Multiple customers affected in downtown region.",
+    "customer_name": "John Smith",
+    "customer_email": "john.smith@email.com",
+    "category": "network",
+    "priority": "critical",
+    "status": "open",
+    "created_at": "2025-05-28T08:30:00Z",
+    "updated_at": "2025-05-28T08:30:00Z",
+    "summary": "Major internet outage affecting downtown area"
+  },
+  {
+    "id": "TKT-002",
+    "title": "Billing Discrepancy",
+    "description": "Incorrect charges on monthly bill. Being charged for premium package not subscribed to.",
+    "customer_name": "Sarah Johnson",
+    "customer_email": "sarah.j@email.com",
+    "category": "billing",
+    "priority": "high",
+    "status": "in-progress",
+    "created_at": "2025-05-27T15:45:00Z",
+    "updated_at": "2025-05-28T09:15:00Z",
+    "summary": "Billing error - incorrect package charges"
+  },
+  {
+    "id": "TKT-003",
+    "title": "VoIP Service Quality Issues",
+    "description": "Experiencing echo and delays during business calls. Affecting customer service operations.",
+    "customer_name": "Michael Chen",
+    "customer_email": "m.chen@email.com",
+    "category": "voip",
+    "priority": "high",
+    "status": "open",
+    "created_at": "2025-05-28T07:15:00Z",
+    "updated_at": "2025-05-28T07:15:00Z",
+    "summary": "VoIP call quality degradation"
+  },
+  {
+    "id": "TKT-004",
+    "title": "New Service Installation Request",
+    "description": "Request for fiber optic internet installation at new business location.",
+    "customer_name": "Emma Wilson",
+    "customer_email": "emma.w@email.com",
+    "category": "service",
+    "priority": "medium",
+    "status": "open",
+    "created_at": "2025-05-27T11:20:00Z",
+    "updated_at": "2025-05-27T11:20:00Z",
+    "summary": "New fiber installation request"
+  },
+  {
+    "id": "TKT-005",
+    "title": "Mobile Data Speed Issue",
+    "description": "Slow mobile data speeds in suburban area. 4G showing but speeds are very low.",
+    "customer_name": "David Brown",
+    "customer_email": "david.b@email.com",
+    "category": "mobile",
+    "priority": "medium",
+    "status": "in-progress",
+    "created_at": "2025-05-26T14:30:00Z",
+    "updated_at": "2025-05-27T16:45:00Z",
+    "summary": "Slow mobile data speeds"
+  },
+  {
+    "id": "TKT-006",
+    "title": "Router Configuration Help",
+    "description": "Need assistance setting up WiFi security settings on provided router.",
+    "customer_name": "Lisa Anderson",
+    "customer_email": "lisa.a@email.com",
+    "category": "technical",
+    "priority": "low",
+    "status": "closed",
+    "created_at": "2025-05-26T09:00:00Z",
+    "updated_at": "2025-05-26T10:30:00Z",
+    "summary": "Router WiFi security setup assistance"
+  }
+]
