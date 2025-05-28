@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telecom Support Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .stats-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .chart-container h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .tickets-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .tickets-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .tickets-table th,
+        .tickets-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tickets-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .ticket-id {
+            font-family: monospace;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .priority-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .priority-critical {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-high {
+            background: #f39c12;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #f1c40f;
+            color: #2c3e50;
+        }
+
+        .priority-low {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .status-open {
+            background: #3498db;
+            color: white;
+        }
+
+        .status-in-progress {
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-closed {
+            background: #27ae60;
+            color: white;
+        }
+
+        .category-badge {
+            padding: 4px 8px;
+            background: #ecf0f1;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #2c3e50;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover,
+        .pagination button.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .no-tickets {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .no-tickets i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-buttons {
+                justify-content: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .tickets-table {
+                font-size: 0.8rem;
+            }
+
+            .tickets-table th,
+            .tickets-table td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-headset"></i> Telecom Support Dashboard</h1>
+            <p>AI-Powered Ticket Management System</p>
+            <div class="nav-buttons">
+                <a href="/create-ticket" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Create New Ticket
+                </a>
+                <button class="btn btn-primary" onclick="refreshDashboard()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid" id="statsGrid">
+            <div class="stats-card">
+                <h3><i class="fas fa-ticket-alt"></i> Total Tickets</h3>
+                <div class="stats-number" id="totalTickets">0</div>
+                <div class="stats-label">All time</div>
+            </div>
+            <div class="stats-card">
+                <h3><i class="fas fa-exclamation-triangle"></i> Critical</h3>
+                <div class="stats-number" id="criticalTickets">0</div>
+                <div class="stats-label">High priority</div>
+            </div>
+            <div class="stats-card">
+                <h3><i class="fas fa-clock"></i> Open Tickets</h3>
+                <div class="stats-number" id="openTickets">0</div>
+                <div class="stats-label">Awaiting response</div>
+            </div>
+            <div class="stats-card">
+                <h3><i class="fas fa-check-circle"></i> Resolved</h3>
+                <div class="stats-number" id="resolvedTickets">0</div>
+                <div class="stats-label">This month</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3><i class="fas fa-chart-pie"></i> Category Distribution</h3>
+            <canvas id="categoryChart" width="400" height="200"></canvas>
+        </div>
+
+        <div class="tickets-section">
+            <div class="section-header">
+                <h3><i class="fas fa-list"></i> Recent Tickets</h3>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="open">Open</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Priority</label>
+                    <select id="priorityFilter">
+                        <option value="">All Priorities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Category</label>
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Search</label>
+                    <input type="text" id="searchInput" placeholder="Search tickets...">
+                </div>
+            </div>
+
+            <div id="ticketsContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Loading tickets...</p>
+                </div>
+            </div>
+
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        class DashboardManager {
+            constructor() {
+                this.currentPage = 1;
+                this.perPage = 10;
+                this.categoryChart = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadCategories();
+                await this.loadAnalytics();
+                await this.loadTickets();
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('statusFilter').addEventListener('change', () => this.loadTickets());
+                document.getElementById('priorityFilter').addEventListener('change', () => this.loadTickets());
+                document.getElementById('categoryFilter').addEventListener('change', () => this.loadTickets());
+                document.getElementById('searchInput').addEventListener('input', 
+                    this.debounce(() => this.loadTickets(), 500));
+            }
+
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            async loadCategories() {
+                try {
+                    const response = await fetch('/api/categories');
+                    const categories = await response.json();
+                    
+                    const categoryFilter = document.getElementById('categoryFilter');
+                    Object.entries(categories).forEach(([key, value]) => {
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = value;
+                        categoryFilter.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading categories:', error);
+                }
+            }
+
+            async loadAnalytics() {
+                try {
+                    const response = await fetch('/api/analytics');
+                    const analytics = await response.json();
+                    
+                    this.updateStatsCards(analytics);
+                    this.updateCategoryChart(analytics);
+                } catch (error) {
+                    console.error('Error loading analytics:', error);
+                }
+            }
+
+            updateStatsCards(analytics) {
+                document.getElementById('totalTickets').textContent = analytics.total_tickets || 0;
+                document.getElementById('criticalTickets').textContent = 
+                    analytics.priority_distribution?.critical || 0;
+                document.getElementById('openTickets').textContent = 
+                    analytics.status_distribution?.open || 0;
+                document.getElementById('resolvedTickets').textContent = 
+                    analytics.status_distribution?.closed || 0;
+            }
+
+            updateCategoryChart(analytics) {
+                const ctx = document.getElementById('categoryChart').getContext('2d');
+                
+                if (this.categoryChart) {
+                    this.categoryChart.destroy();
+                }
+
+                const categoryData = analytics.category_distribution || {};
+                const labels = Object.keys(categoryData);
+                const data = Object.values(categoryData);
+                
+                const colors = [
+                    '#3498db', '#e74c3c', '#f39c12', '#27ae60', '#9b59b6',
+                    '#1abc9c', '#34495e', '#f1c40f', '#e67e22', '#95a5a6'
+                ];
+
+                this.categoryChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels.map(label => this.formatCategoryName(label)),
+                        datasets: [{
+                            data: data,
+                            backgroundColor: colors.slice(0, labels.length),
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            formatCategoryName(category) {
+                const categoryMap = {
+                    'network': 'Network Issues',
+                    'billing': 'Billing & Payment',
+                    'service': 'Service Activation',
+                    'technical': 'Technical Support',
+                    'hardware': 'Hardware/Equipment',
+                    'connectivity': 'Connectivity Issues',
+                    'mobile': 'Mobile Services',
+                    'internet': 'Internet Services',
+                    'voip': 'VoIP Services',
+                    'general': 'General Inquiry'
+                };
+                return categoryMap[category] || category;
+            }
+
+            async loadTickets() {
+                const ticketsContainer = document.getElementById('ticketsContainer');
+                ticketsContainer.innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        <p>Loading tickets...</p>
+                    </div>
+                `;
+
+                try {
+                    const params = new URLSearchParams({
+                        page: this.currentPage,
+                        per_page: this.perPage
+                    });
+
+                    const statusFilter = document.getElementById('statusFilter').value;
+                    const priorityFilter = document.getElementById('priorityFilter').value;
+                    const categoryFilter = document.getElementById('categoryFilter').value;
+                    const searchInput = document.getElementById('searchInput').value;
+
+                    if (statusFilter) params.append('status', statusFilter);
+                    if (priorityFilter) params.append('priority', priorityFilter);
+                    if (categoryFilter) params.append('category', categoryFilter);
+                    if (searchInput) params.append('search', searchInput);
+
+                    const response = await fetch(`/api/tickets?${params}`);
+                    const result = await response.json();
+
+                    this.renderTickets(result.tickets);
+                    this.renderPagination(result);
+                } catch (error) {
+                    console.error('Error loading tickets:', error);
+                    ticketsContainer.innerHTML = `
+                        <div class="no-tickets">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Error Loading Tickets</h3>
+                            <p>Please try again later.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            renderTickets(tickets) {
+                const ticketsContainer = document.getElementById('ticketsContainer');
+                
+                if (!tickets || tickets.length === 0) {
+                    ticketsContainer.innerHTML = `
+                        <div class="no-tickets">
+                            <i class="fas fa-inbox"></i>
+                            <h3>No Tickets Found</h3>
+                            <p>No tickets match your current filters.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const ticketsHTML = `
+                    <table class="tickets-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Customer</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tickets.map(ticket => this.renderTicketRow(ticket)).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                ticketsContainer.innerHTML = ticketsHTML;
+            }
+
+            renderTicketRow(ticket) {
+                const createdDate = new Date(ticket.created_at).toLocaleDateString();
+                const createdTime = new Date(ticket.created_at).toLocaleTimeString();
+                
+                return `
+                    <tr onclick="viewTicket('${ticket.id}')" style="cursor: pointer;">
+                        <td><span class="ticket-id">#${ticket.id}</span></td>
+                        <td>
+                            <strong>${this.escapeHtml(ticket.title)}</strong>
+                            ${ticket.summary ? `<br><small>${this.escapeHtml(ticket.summary)}</small>` : ''}
+                        </td>
+                        <td>
+                            <div>${this.escapeHtml(ticket.customer_name)}</div>
+                            <small>${this.escapeHtml(ticket.customer_email)}</small>
+                        </td>
+                        <td>
+                            <span class="category-badge">
+                                ${this.formatCategoryName(ticket.category)}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="priority-badge priority-${ticket.priority}">
+                                ${ticket.priority}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge status-${ticket.status}">
+                                ${ticket.status.replace('-', ' ')}
+                            </span>
+                        </td>
+                        <td>
+                            <div>${createdDate}</div>
+                            <small>${createdTime}</small>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="event.stopPropagation(); viewTicket('${ticket.id}')" 
+                                    style="padding: 4px 8px; font-size: 0.8rem;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            renderPagination(result) {
+                const pagination = document.getElementById('pagination');
+                
+                if (result.total_pages <= 1) {
+                    pagination.innerHTML = '';
+                    return;
+                }
+
+                let paginationHTML = '';
+
+                // Previous button
+                if (result.page > 1) {
+                    paginationHTML += `
+                        <button onclick="dashboard.changePage(${result.page - 1})">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                    `;
+                }
+
+                // Page numbers
+                const startPage = Math.max(1, result.page - 2);
+                const endPage = Math.min(result.total_pages, result.page + 2);
+
+                if (startPage > 1) {
+                    paginationHTML += `<button onclick="dashboard.changePage(1)">1</button>`;
+                    if (startPage > 2) {
+                        paginationHTML += `<span>...</span>`;
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHTML += `
+                        <button onclick="dashboard.changePage(${i})" 
+                                ${i === result.page ? 'class="active"' : ''}>
+                            ${i}
+                        </button>
+                    `;
+                }
+
+                if (endPage < result.total_pages) {
+                    if (endPage < result.total_pages - 1) {
+                        paginationHTML += `<span>...</span>`;
+                    }
+                    paginationHTML += `<button onclick="dashboard.changePage(${result.total_pages})">${result.total_pages}</button>`;
+                }
+
+                // Next button
+                if (result.page < result.total_pages) {
+                    paginationHTML += `
+                        <button onclick="dashboard.changePage(${result.page + 1})">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    `;
+                }
+
+                pagination.innerHTML = paginationHTML;
+            }
+
+            changePage(page) {
+                this.currentPage = page;
+                this.loadTickets();
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // Global functions
+        function refreshDashboard() {
+            dashboard.loadAnalytics();
+            dashboard.loadTickets();
+        }
+
+        function viewTicket(ticketId) {
+            // Create a modal or navigate to ticket detail page
+            window.open(`/ticket/${ticketId}`, '_blank');
+        }
+
+        // Initialize dashboard
+        let dashboard;
+        document.addEventListener('DOMContentLoaded', () => {
+            dashboard = new DashboardManager();
+        });
+    </script>
+</body>
+</html>
